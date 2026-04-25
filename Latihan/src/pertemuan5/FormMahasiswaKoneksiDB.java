@@ -1,4 +1,4 @@
-package pertemuan7;
+package pertemuan5;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -8,25 +8,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
-// IMPORT JASPER
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.view.JasperViewer;
-
-public class FormMahasiswaReport extends JFrame {
+public class FormMahasiswaKoneksiDB extends JFrame {
 
     JTextField txtNim, txtNama, txtJurusan, txtAlamat;
-    JButton btnTambah, btnCetak;
+    JButton btnTambah;
     JTable table;
     DefaultTableModel model;
 
     Connection conn;
 
-    // KONEKSI DATABASE
+    // METHOD KONEK DATABASE
     public void connect() {
         try {
             String url = "jdbc:mysql://localhost:3306/db_mahasiswa";
             String user = "root";
-            String pass = "";
+            String pass = ""; // default XAMPP kosong
 
             conn = DriverManager.getConnection(url, user, pass);
             System.out.println("Koneksi berhasil!");
@@ -35,17 +31,16 @@ public class FormMahasiswaReport extends JFrame {
         }
     }
 
-    public FormMahasiswaReport() {
+    public FormMahasiswaKoneksiDB() {
 
-        connect(); // koneksi jalan
+        connect(); // panggil koneksi
 
-        setTitle("Form Mahasiswa + Report");
-        setSize(550, 420);
+        setTitle("Form Mahasiswa");
+        setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
 
-        // LABEL
         JLabel lblNim = new JLabel("NIM");
         lblNim.setBounds(20, 20, 80, 25);
         add(lblNim);
@@ -62,7 +57,6 @@ public class FormMahasiswaReport extends JFrame {
         lblAlamat.setBounds(20, 110, 80, 25);
         add(lblAlamat);
 
-        // TEXTFIELD
         txtNim = new JTextField();
         txtNim.setBounds(100, 20, 150, 25);
         add(txtNim);
@@ -79,21 +73,14 @@ public class FormMahasiswaReport extends JFrame {
         txtAlamat.setBounds(100, 110, 150, 25);
         add(txtAlamat);
 
-        // BUTTON TAMBAH
         btnTambah = new JButton("Tambah");
         btnTambah.setBounds(100, 150, 100, 30);
         add(btnTambah);
 
-        // BUTTON CETAK
-        btnCetak = new JButton("Cetak Laporan");
-        btnCetak.setBounds(220, 150, 150, 30);
-        add(btnCetak);
-
-        // TABEL
         model = new DefaultTableModel();
         table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(20, 200, 500, 150);
+        scrollPane.setBounds(20, 200, 440, 130);
         add(scrollPane);
 
         model.addColumn("NIM");
@@ -101,7 +88,7 @@ public class FormMahasiswaReport extends JFrame {
         model.addColumn("Jurusan");
         model.addColumn("Alamat");
 
-        // EVENT TAMBAH DATA
+        // EVENT BUTTON
         btnTambah.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -116,6 +103,7 @@ public class FormMahasiswaReport extends JFrame {
 
                     pst.executeUpdate();
 
+                    // tampil ke tabel
                     Object[] data = {
                         txtNim.getText(),
                         txtNama.getText(),
@@ -136,25 +124,9 @@ public class FormMahasiswaReport extends JFrame {
                 }
             }
         });
-
-        // EVENT CETAK LAPORAN 🔥
-        btnCetak.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    String path = "src/laporan/laporan1.jasper";
-
-                    JasperPrint print = JasperFillManager.fillReport(path, null, conn);
-                    JasperViewer.viewReport(print, false);
-
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Gagal cetak: " + ex.getMessage());
-                }
-            }
-        });
     }
 
     public static void main(String[] args) {
-        new FormMahasiswaReport().setVisible(true);
+        new FormMahasiswaKoneksiDB().setVisible(true);
     }
 }
